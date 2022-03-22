@@ -16,11 +16,29 @@ pos_x = 0
 pos_from_file = 0
 move = 0
 
-def read_Setting():
+def OLD_read_Setting():
     global pos_from_file
     try:
         txt_file = open('ustawienia.txt')
         pos_from_file = txt_file.read()
+    except IOError:
+        pos_from_file = open('ustawienia.txt', 'w+') #create file
+        pos_from_file = 0
+    finally:
+        txt_file.close()
+        # print('USTAWIENIA: ', pos_from_file)
+
+
+def read_Setting():
+    global pos_from_file
+    try:
+        txt_file = open('ustawienia.txt', newline='')
+        reader = csv.reader(txt_file, delimiter=';')
+        #for row in reader:
+        #    print(row)
+        for row in reader:
+            screen = row[0]
+            pos_from_file = row[1]
     except IOError:
         pos_from_file = open('ustawienia.txt', 'w+') #create file
         pos_from_file = 0
