@@ -1,7 +1,7 @@
 from tkinter import *
 import csv
 from PIL import Image, ImageTk
-# from screeninfo import get_monitors
+from screeninfo import get_monitors
 # import random
 
 
@@ -47,6 +47,13 @@ def read_Setting():
         # print('USTAWIENIA: ', pos_from_file)
 read_Setting()
 
+def Get_All_monitors():
+    for m in get_monitors():
+        print(m)
+        print((str(m).split(","))[0])
+
+
+Get_All_monitors
 def move_up_down():
     global move
     global lastClickX
@@ -112,8 +119,8 @@ def from_rgb(rgb):
     return f'#{r:02x}{g:02x}{b:02x}'
 
 
-#for m in get_monitors():
-#    print(str(m))
+
+
 
 # def get_monitor_from_coord(x, y):
 #     monitors = get_monitors()
