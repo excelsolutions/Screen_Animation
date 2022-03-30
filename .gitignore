@@ -1,0 +1,21 @@
+# FOLDERS:
+.idea
+pdf
+.git
+inspectionProfiles
+__pycache__
+
+# Files:
+test_create_json.py
+test_cred.json
+.gitignore.bak
+modules.xml
+pdf_to_sftp.iml
+workspace.xml
+Animation_On_Screen.spec
+Bus.png
+bus1.png
+build/
+bus1.pngdist/
+output/
+dist/

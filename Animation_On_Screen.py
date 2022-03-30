@@ -2,10 +2,13 @@ from tkinter import *
 import csv
 from PIL import Image, ImageTk
 from screeninfo import get_monitors
+
+import pyautogui # for events pressing key
 # import random
 # https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
 # 1. Insert in terminal: auto-py-to-exe
 i = 0
+j = 0
 form_width = 200
 form_height = 80
 pic_width = 200
@@ -63,7 +66,7 @@ Get_All_monitors()
 
 
 def move_up_down():
-    global move, lastClickX, form_width, form_height, i, timer
+    global move, lastClickX, form_width, form_height, i, timer, j
     screen_w = root.winfo_screenwidth()  # width of the screen
     screen_h = root.winfo_screenheight()  # height of the screen
 
@@ -77,6 +80,11 @@ def move_up_down():
     #    pos_x = str(lastClickX)
     #if move == 0:
     i = i + 1
+    j = j + 1
+    if j >= 60:
+        pyautogui.keyDown('shift')
+        pyautogui.keyUp('shift')  # release the shift key
+        j = 0
 
     x, y = str(pos_x), str(i)
     loc = str(form_width) + "x" + str(form_height) + "+" + x + '+' + y
@@ -158,7 +166,6 @@ def Terminate_Program(event):
     root.destroy()
 
 
-
 root = Tk()
 root.title("Lukasz Morawski")
 # root.geometry("300x300+100+100")
@@ -180,6 +187,5 @@ root.configure(bg=from_rgb((0,0,10)))
 root.wm_attributes("-transparentcolor", from_rgb((0,0,10)) )
 move_up_down()      # <-- call to move_me
 root.overrideredirect(True)
-
 root.call('wm', 'attributes', '.', '-topmost', '1')
 root.mainloop()
