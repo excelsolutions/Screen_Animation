@@ -3,10 +3,8 @@ import csv
 from PIL import Image, ImageTk
 from screeninfo import get_monitors
 # import random
-
-
-
-
+# https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
+# 1. Insert in terminal: auto-py-to-exe
 i = 0
 form_width = 200
 form_height = 80
@@ -157,7 +155,7 @@ def Finish_Dragging(event):
     # current_screen = get_monitor_from_coord(root.winfo_x(), root.winfo_y())
     # print(current_screen.width, current_screen.height, root.winfo_x(), root.winfo_y())
 def Terminate_Program(event):
-    quit()
+    root.destroy()
 
 
 
@@ -180,8 +178,8 @@ label.place(x=10, y=10)
 root.bind('<Button-3>', Terminate_Program) # right click
 root.configure(bg=from_rgb((0,0,10)))
 root.wm_attributes("-transparentcolor", from_rgb((0,0,10)) )
-
 move_up_down()      # <-- call to move_me
 root.overrideredirect(True)
 
+root.call('wm', 'attributes', '.', '-topmost', '1')
 root.mainloop()
