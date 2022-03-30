@@ -2,7 +2,7 @@ from tkinter import *
 import csv
 from PIL import Image, ImageTk
 from screeninfo import get_monitors
-
+import json
 import pyautogui # for events pressing key
 # import random
 # https://towardsdatascience.com/how-to-easily-convert-a-python-script-to-an-executable-file-exe-4966e253c7e9
@@ -21,30 +21,29 @@ screen_from_file = 1
 move = 0
 timer = 500
 
-def read_Setting():
+def load_settings():
     global pos_from_file, form_width, form_height, pic_width, pic_height, timer, screen_from_file
-    try:
-        txt_file = open('ustawienia.txt', newline='')
-        reader = csv.reader(txt_file, delimiter=';')
+    # Opening JSON file
+    f = open('settings.json')
+    # returns JSON object as
+    # a dictionary
+    data = json.load(f)
 
-        for row in reader:
-            screen_from_file = row[0]
-            pos_from_file = row[1]
-            form_width = str(row[2])
-            form_height = str(row[3])
-            pic_width = str(row[4])
-            pic_height = str(row[5])
-            timer = row[6]
-    except IOError:
-        pos_from_file = open('ustawienia.txt', 'w+') #create file
-        pos_from_file = 0
-        screen = 1 # default - 1 screen
-    finally:
-        txt_file.close()
-        # print('USTAWIENIA: ', pos_from_file)
+    # Iterating through the json
+    # list
+    print('test', data['animation_on_screen']['pos_from_file'])
+    screen_from_file = data['animation_on_screen']['screen_from_file']
+    pos_from_file = data['animation_on_screen']['pos_from_file']
+    form_width = str(data['animation_on_screen']['form_width'])
+    form_height = str(data['animation_on_screen']['form_height'])
+    pic_width = str(data['animation_on_screen']['pic_width'])
+    pic_height = str(data['animation_on_screen']['pic_height'])
+    timer = data['animation_on_screen']['timer']
 
+    # Closing file
+    f.close()
 
-read_Setting()
+load_settings()
 
 def Get_All_monitors():
     global pos_from_file
