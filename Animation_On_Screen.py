@@ -1,3 +1,9 @@
+'''
+2022 Lukasz Morawski
+CHANGELOG
+2022-04-06 - change way of recognize screen.
+'''
+
 from tkinter import *
 import csv
 from PIL import Image, ImageTk
@@ -16,13 +22,16 @@ pic_height = 80
 lastClickX = 0 # used for dragging form
 lastClickY = 0 # used for dragging form
 pos_x = 0
-pos_from_file = 0
+pos_X_file = 0 # for placing picture in prooper screen
+pos_Y_file = 0 # for placing picture in prooper screen
 screen_from_file = 1
 move = 0
 timer = 500
-
+screen_all = {}
+screen_h = 0
+pyautogui.FAILSAFE = False
 def load_settings():
-    global pos_from_file, form_width, form_height, pic_width, pic_height, timer, screen_from_file
+    global pos_X_file, pos_Y_file, form_width, form_height, pic_width, pic_height, timer, screen_from_file
     # Opening JSON file
     f = open('settings.json')
     # returns JSON object as
@@ -31,49 +40,71 @@ def load_settings():
 
     # Iterating through the json
     # list
-    print('test', data['animation_on_screen']['pos_from_file'])
+    # print('screen_from_file', data['animation_on_screen']['screen_from_file'])
     screen_from_file = data['animation_on_screen']['screen_from_file']
-    pos_from_file = data['animation_on_screen']['pos_from_file']
+
+    pos_X_file = data['animation_on_screen']['pos_X_file']
+    pos_Y_file = data['animation_on_screen']['pos_X_file']
     form_width = str(data['animation_on_screen']['form_width'])
     form_height = str(data['animation_on_screen']['form_height'])
     pic_width = str(data['animation_on_screen']['pic_width'])
     pic_height = str(data['animation_on_screen']['pic_height'])
     timer = data['animation_on_screen']['timer']
-
     # Closing file
     f.close()
 
 load_settings()
-
 def Get_All_monitors():
-    global pos_from_file
+    global pos_X_file, pos_Y_file, screen_h
     i = 0
+
     screen = []
     screen_width = []
+    screen_w = 'n' # horizontally, screen 1
     for m in get_monitors():
-        i =+ 1
-        print(str(m))
+        i = i + 1
+        # print("Monitor: ", str(m))
         screen.append((str(m).split(","))[0].split("=")[1])
-        print(((str(m).split(","))[2].split("=")[1]))
+        # print("screen: ", ((str(m).split(","))[2].split("=")[1]))
         screen_width.append((str(m).split(","))[2].split("=")[1])
-    if int(screen_from_file) > 0:
-        pos_from_file = int(screen[int(screen_from_file) - 1])+ int(screen_width[int(screen_from_file) - 1]) - int(form_width)
 
+        screen_all[i] = {}
+        screen_all[i]['i'] = i
+        screen_all[i]['x'] = ((str(m).split(","))[0].split("=")[1])
+        screen_all[i]['y'] = ((str(m).split(","))[1].split("=")[1])
+        screen_all[i]['width'] = ((str(m).split(","))[2].split("=")[1])
+        screen_all[i]['height'] = ((str(m).split(","))[3].split("=")[1])
+
+
+    if abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) :
+        screen_w = 'w1'
+    if abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y'])) :
+        screen_w = 'w2'
+
+    # print(screen_w)
+    if int(screen_from_file) > 0: # other than 0 mean that user choose the screen. If equal 0 then run on primary screen
+        if abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) or abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y'])): # screens sets  vertically
+            pos_X_file = int(screen_all[int(screen_from_file)]['width']) - int(form_width)
+            pos_Y_file = int(screen_all[int(screen_from_file)]['y'])
+            screen_h = int(screen_all[int(screen_from_file)]['height'])
+        else: # screens sets horizontally
+            pos_X_file = int(screen_all[int(screen_from_file)]['x']) + int(screen_all[int(screen_from_file)]['width']) - int(form_width)
+            pos_Y_file = 0
+            screen_h = int(screen_all[int(screen_from_file)]['height'])
 
 
 Get_All_monitors()
 
 
 def move_up_down():
-    global move, lastClickX, form_width, form_height, i, timer, j
-    screen_w = root.winfo_screenwidth()  # width of the screen
-    screen_h = root.winfo_screenheight()  # height of the screen
+    global move, lastClickX, form_width, form_height, i, timer, j, pos_X_file, pos_Y_file, screen_from_file, screen_all, screen_h
+    screen_w = int(screen_all[int(screen_from_file)]['width'])
 
-    if pos_from_file == 0:
+    if pos_X_file == 0:
         pos_x = screen_w - form_width
     else:
-        pos_x = pos_from_file
-
+        pos_x = pos_X_file
+        pos_y = pos_Y_file
     #pos_x = str(lastClickX)
     #if lastClickX != 0:
     #    pos_x = str(lastClickX)
@@ -85,13 +116,15 @@ def move_up_down():
         pyautogui.keyUp('shift')  # release the shift key
         j = 0
 
-    x, y = str(pos_x), str(i)
+    x, y = str(pos_x), str(pos_y + i)
     loc = str(form_width) + "x" + str(form_height) + "+" + x + '+' + y
+    # print(pyautogui.position(), i, "screen_height: " + str(screen_h))
     # loc = "300x300+" + x + '+' + y
     root.geometry(loc)
     root.after(timer, move_up_down)  # <-- auto call
-    if i > screen_h:
+    if i >= screen_h - int(form_height):
         i = 1
+
 
 def delete_background(image_to_transform, threshold):
     output_image = image_to_transform
@@ -174,8 +207,8 @@ resize_image = image.resize((int(pic_width), int(pic_height)))
 ph = ImageTk.PhotoImage(resize_image)
 photo = PhotoImage(file="bus1.PNG")
 label = Label(root, image=ph, bg=from_rgb((0,0,10)))
-im1 = delete_background(image, 0)
-im1 = im1.save("bus1.png")
+# im1 = delete_background(image, 0)
+# im1 = im1.save("bus1.png")
 label.place(x=10, y=10)
 
 # root.bind('<Button-1>', SaveLastClickPos) # left click

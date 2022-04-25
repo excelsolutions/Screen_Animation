@@ -1,5 +1,8 @@
 import json
+
+
 def write_json():
+    '''Build JSON file'''
     screen_from_file = 1
     pos_from_file = 3000
     form_width = 215
