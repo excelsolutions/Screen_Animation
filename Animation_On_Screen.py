@@ -1,6 +1,7 @@
 '''
 2022 Lukasz Morawski
 CHANGELOG
+2022-04-27 - repair Get_All_monitors and crashing after run program on PC with one screen
 2022-04-06 - change way of recognize screen.
 '''
 
@@ -74,16 +75,16 @@ def Get_All_monitors():
         screen_all[i]['y'] = ((str(m).split(","))[1].split("=")[1])
         screen_all[i]['width'] = ((str(m).split(","))[2].split("=")[1])
         screen_all[i]['height'] = ((str(m).split(","))[3].split("=")[1])
-
-
-    if abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) :
-        screen_w = 'w1'
-    if abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y'])) :
-        screen_w = 'w2'
+    print (screen_from_file)
+    if screen_from_file > 1:
+        if abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) :
+            screen_w = 'w1'
+        if abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y'])) :
+            screen_w = 'w2'
 
     # print(screen_w)
-    if int(screen_from_file) > 0: # other than 0 mean that user choose the screen. If equal 0 then run on primary screen
-        if abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) or abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y'])): # screens sets  vertically
+    if int(screen_from_file) > 1: # other than 0 mean that user choose the screen. If equal 0 then run on primary screen
+        if (abs(int(screen_all[1]['y'])) == abs(int(screen_all[2]['height'])) or abs(int(screen_all[1]['height'])) == abs(int(screen_all[2]['y']))) : # screens sets  vertically
             pos_X_file = int(screen_all[int(screen_from_file)]['width']) - int(form_width)
             pos_Y_file = int(screen_all[int(screen_from_file)]['y'])
             screen_h = int(screen_all[int(screen_from_file)]['height'])
@@ -91,6 +92,10 @@ def Get_All_monitors():
             pos_X_file = int(screen_all[int(screen_from_file)]['x']) + int(screen_all[int(screen_from_file)]['width']) - int(form_width)
             pos_Y_file = 0
             screen_h = int(screen_all[int(screen_from_file)]['height'])
+    else:
+        pos_X_file = int(screen_all[int(screen_from_file)]['width']) - int(form_width)
+        pos_Y_file = 0
+        screen_h = int(screen_all[int(screen_from_file)]['height'])
 
 
 Get_All_monitors()
@@ -101,7 +106,7 @@ def move_up_down():
     screen_w = int(screen_all[int(screen_from_file)]['width'])
 
     if pos_X_file == 0:
-        pos_x = screen_w - form_width
+        pos_x = int(screen_w) - int(form_width)
     else:
         pos_x = pos_X_file
         pos_y = pos_Y_file
